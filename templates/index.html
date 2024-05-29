@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Nhận diện khuôn mặt</title>
+    <script src="{{ url_for('static', filename='jquery-3.6.0.min.js') }}"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        h1 {
+            font-size: 40px;
+            color: #333;
+            margin: 20px;
+        }
+
+        button {
+            font-size: 24px;
+            padding: 10px 20px;
+            margin: 10px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+
+        p {
+            font-size: 24px;
+            color: #555;
+            margin: 10px;
+        }
+
+        .server-info {
+            font-size: 24px;
+            color: #555;
+            margin: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Đang khởi động chương trình</h1>
+    <button id="start-button" onclick="startFunction()" disabled>Khởi động</button>
+    <button id="join-button" onclick="joinFunction()" disabled>Tham gia</button>
+    <button id="clear-button" onclick="clearFunction()" disabled>Xóa dữ liệu</button>
+    <button id="stop-button" onclick="stopFunction()">Tắt chương trình</button>
+    <p id="demo"></p>
+    <p id="stdout"></p>
+    <p id="stderr"></p>
+    <div class="server-info">Trạng thái: <span id="status-value">Đang kiểm tra...</span></div>
+    <div class="server-info">Server: <span id="server-value">Đang kiểm tra...</span></div>
+    <div class="server-info">Dung lượng: <span id="usage-value">Đang kiểm tra...</span></div>
+
+    <script>
+        function startFunction() {
+            document.getElementById("start-button").disabled = true;
+
+            $.get("/start", function(data) {
+                setTimeout(function() {
+                    document.getElementById("start-button").disabled = false;
+                }, 10000);
+            });
+        }
+
+        function joinFunction() {
+            document.getElementById("join-button").disabled = true;
+
+            $.get("/join", function(data) {
+                setTimeout(function() {
+                    document.getElementById("join-button").disabled = false;
+
+                    // Check if data.success is false
+                    if (data.success === false) {
+                    // Show dialog or take any other action
+                    window.alert("Không tìm thấy máy chủ!");
+                    }
+                }, 10000);
+            });
+        }
+
+        function stopFunction() {
+            document.getElementById("stop-button").disabled = true;
+            $.get("/stop", function(data) {
+                document.getElementById("stop-button").disabled = false;
+            });
+        }
+
+        function clearFunction() {
+            // Display a confirmation dialog
+            var confirmation = window.confirm("Are you sure you want to clear data?");
+
+            if (confirmation) {
+                // User clicked OK in the confirmation dialog
+                document.getElementById("clear-button").disabled = true;
+
+                $.get("/clear", function(data) {
+                    document.getElementById("stdout").innerHTML = data.stdout;
+                    document.getElementById("stderr").innerHTML = data.stderr;
+                    document.getElementById("clear-button").disabled = false;
+                });
+            } else {
+                // User clicked Cancel in the confirmation dialog (no action taken)
+            }
+        }
+
+        function checkServerStatus() {
+            $.get("/ping", function(data) {
+                document.getElementById("server-value").innerText = data.server
+                document.getElementById("usage-value").innerText = data.memory_usage + " MB" + " / " + data.dbsize + " frames" + ""
+                if (data.available) {
+                    document.getElementById("status-value").innerText = "Available";
+                    document.getElementById("start-button").disabled = false; // Enable the button
+                    document.getElementById("join-button").disabled = false; // Enable the button
+                    document.getElementById("clear-button").disabled = false; // Enable the button
+                    document.querySelector("h1").innerText = "Chương trình đã được khởi động"; // Update the <h1> text
+                } else {
+                    document.getElementById("status-value").innerText = "Not Available";
+                    document.getElementById("start-button").disabled = true; // Disable the button
+                    document.getElementById("join-button").disabled = true; // Disable the button
+                    document.getElementById("clear-button").disabled = true; // Disable the button
+                    document.querySelector("h1").innerText = "Đang khởi động chương trình"; // Update the <h1> text
+                }
+            });
+        }
+
+
+        setInterval(checkServerStatus, 10000); // Check server status every 10 seconds
+        checkServerStatus(); // Initial check
+    </script>
+</body>
+</html>

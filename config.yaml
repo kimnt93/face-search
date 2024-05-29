@@ -1,0 +1,10 @@
+face_model: FaceRecognitionSimple
+master_node_ip: 127.0.0.1
+model_size: large
+recognize_fps: 8
+remove_old: false
+roi: true
+scale_ratio: 1.0
+threshold: 0.894643
+time_filter_second: 20
+video_capture: 0

@@ -1,0 +1,9 @@
+cachetools==5.0.0
+face-recognition==1.3.0
+facelib @ git+https://github.com/sajjjadayobi/FaceLib.git@382841efec823f059f49754e5d378abb12cfb551
+opencv-python==4.5.5.64
+pymilvus==2.0.2
+PyYAML
+flask
+redis
+psutil==5.9.8

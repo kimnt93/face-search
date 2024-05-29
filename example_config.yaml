@@ -1,0 +1,16 @@
+face_model: FaceRecognitionSimple  # FaceRecognitionWithMask or FaceRecognitionSimple
+model_size: large  # small or large
+threshold: 0.894643
+video_capture: 0  # 0 if webcam otherwise path to .mp4
+remove_old: false
+time_filter_second: 600
+
+# ROI
+roi: yes
+
+recognize_fps: 8  # frames per sec
+scale_ratio: 1.0
+
+# distributed setup
+# if master node, set ip to 127.0.0.1
+master_node_ip: 127.0.0.1 # 10.10.10.100
